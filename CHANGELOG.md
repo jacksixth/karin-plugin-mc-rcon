@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.0.0...v1.0.1) (2025-03-05)
+
+
+### Bug Fixes
+
+* **README:** 更新安装指南并修正项目名称 ([e6365ff](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/e6365ff52bafb369e5e77385bdcc24c15b246c76))
+
 ## 1.0.0 (2025-03-05)
 
 
