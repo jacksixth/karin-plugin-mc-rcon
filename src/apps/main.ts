@@ -1,7 +1,7 @@
 import { isValidHost, mcMotd } from "@/utils"
 import karin, { segment } from "node-karin"
 
-karin.command(
+export const motd = karin.command(
   /^#?motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i,
   async (e) => {
     const regRes = e.msg.match(/^#?motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i)
@@ -30,7 +30,6 @@ karin.command(
         msgList.push(segment.text(data.type + " " + data.version + "\n"))
         if (data.favicon) {
           msgList.push(segment.image(data.favicon))
-          msgList.push(segment.text("\n"))
         }
         msgList.push(
           segment.text(data.players.online + "/" + data.players.max + "\n")
@@ -38,11 +37,14 @@ karin.command(
         if (data.description)
           msgList.push(segment.text(data.description + "\n"))
         e.bot.sendMsg(e.contact, msgList)
+      } else {
+        e.reply("❌ 获取服务器状态失败，可能是服务器未开启。")
       }
     }
   },
   {
     at: true,
     name: "mc-motd", // 插件名称
+    log: true,
   }
 )

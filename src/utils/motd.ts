@@ -15,15 +15,6 @@ export const mcMotd = async (_host: string, _port: number = 25565) => {
     logger.error("===mc-rcon===\n", err)
     return undefined
   })
-  const bedrockStatus = await pingBedrock(host, {
-    port: port as number & { _brand: "Port" },
-    timeout: 5000 as number & {
-      _brand: "Timeout"
-    },
-  }).catch((err) => {
-    logger.error("===mc-rcon===\n", err)
-    return undefined
-  })
 
   if (javaStatus) {
     const description =
@@ -43,6 +34,16 @@ export const mcMotd = async (_host: string, _port: number = 25565) => {
       type: "java",
     }
   }
+  const bedrockStatus = await pingBedrock(host, {
+    port: port as number & { _brand: "Port" },
+    timeout: 5000 as number & {
+      _brand: "Timeout"
+    },
+  }).catch((err) => {
+    logger.error("===mc-rcon===\n", err)
+    return undefined
+  })
+
   if (bedrockStatus) {
     return {
       version: bedrockStatus.version.minecraftVersion,
