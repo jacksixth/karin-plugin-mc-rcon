@@ -1,0 +1,67 @@
+{
+  "name": "karin-plugin-mc-rcon",
+  "version": "1.0.0",
+  "author": "shijin",
+  "type": "module",
+  "description": "karin plugin template",
+  "homepage": "https://github.com/KarinJS/karin-plugin-template-ts",
+  "bugs": {
+    "url": "https://github.com/KarinJS/karin-plugin-template-ts/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarinJS/karin-plugin-template-ts.git"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "pub": "npm publish --access public",
+    "dev": "tsx watch --include \"src/**/*.ts\" src/index.ts",
+    "pr": "node lib/cli/pr.js"
+  },
+  "main": "lib/index.js",
+  "devDependencies": {
+    "@types/node": "^20.17.8",
+    "eslint": "^9.7.0",
+    "neostandard": "^0.11.9",
+    "node-karin": "latest",
+    "tsc-alias": "^1.8.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@minescope/mineping": "^1.6.1",
+    "rcon-client": "^4.2.5"
+  },
+  "karin": {
+    "main": "src/index.ts",
+    "apps": [
+      "lib/apps"
+    ],
+    "ts-apps": [
+      "src/apps"
+    ],
+    "web": "./lib/web.config.js",
+    "ts-web": "./src/web.config.ts",
+    "static": [
+      "resources"
+    ],
+    "files": [
+      "config",
+      "data",
+      "resources"
+    ]
+  },
+  "files": [
+    "/lib/**/*.js",
+    "/lib/**/*.d.ts",
+    "/config/*.yaml",
+    "resources",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
+}
