@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.0.1...v1.1.0) (2025-03-05)
+
+
+### Features
+
+* **utils:** 添加 RCON 连接功能并优化 MOTD 命令 ([60138ad](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/60138ad48aff72d2986ff83277c5a62cd0a6c93a))
+
 ## [1.0.1](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.0.0...v1.0.1) (2025-03-05)
 
 
