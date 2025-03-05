@@ -2,7 +2,7 @@ import { isValidHost, mcMotd } from "@/utils"
 import karin, { segment } from "node-karin"
 
 export const motd = karin.command(
-  /^#?motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i,
+  /^#motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i,
   async (e) => {
     const regRes = e.msg.match(/^#?motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i)
     if (!regRes) {

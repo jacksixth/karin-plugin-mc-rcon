@@ -1,5 +1,6 @@
 import { pingJava, pingBedrock } from "@minescope/mineping"
 import { logger } from "node-karin"
+const loggerPluginName = logger.chalk.hex("#90CAF9")(" ===== mc-rcon ===== ")
 export const mcMotd = async (_host: string, _port: number = 25565) => {
   let host = _host
   let port = _port
@@ -12,7 +13,7 @@ export const mcMotd = async (_host: string, _port: number = 25565) => {
     port,
     timeout: 5000,
   }).catch((err) => {
-    logger.error("===mc-rcon===\n", err)
+    logger.error(loggerPluginName,'\n', '--- motd --- \n',err)
     return undefined
   })
 
@@ -40,7 +41,7 @@ export const mcMotd = async (_host: string, _port: number = 25565) => {
       _brand: "Timeout"
     },
   }).catch((err) => {
-    logger.error("===mc-rcon===\n", err)
+    logger.error(loggerPluginName,'--- motd --- \n', err)
     return undefined
   })
 
