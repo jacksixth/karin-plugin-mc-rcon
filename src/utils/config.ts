@@ -9,7 +9,7 @@ import {
 } from 'node-karin'
 
 const dir = `${basePath}/${basename}`
-const dirConfig = `${dir}/config`
+export const dirConfig = `${dir}/config`
 
 const defDir = `${dirPath}/config`
 const defConfig = `${defDir}/config`

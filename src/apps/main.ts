@@ -48,3 +48,9 @@ export const motd = karin.command(
     log: true,
   }
 )
+
+
+// karin.accept('notice.groupMemberBan', (e) => {
+//   //
+// })
+
