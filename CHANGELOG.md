@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.1.0...v1.2.0) (2025-03-11)
+
+
+### Features
+
+* **config:** 添加服务器配置功能 ([808b7d1](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/808b7d1ea30648f1f85e3f4e9bf0a31a491e82c6))
+
 ## [1.1.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.0.1...v1.1.0) (2025-03-05)
 
 
