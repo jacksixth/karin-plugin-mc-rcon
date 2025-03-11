@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.2.0...v1.2.1) (2025-03-11)
+
+
+### Bug Fixes
+
+* **config:** 为服务器配置添加别名功能 ([01a8525](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/01a85254aefaa919ce10dd9f76705aa14afb6480))
+
 ## [1.2.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.1.0...v1.2.0) (2025-03-11)
 
 
