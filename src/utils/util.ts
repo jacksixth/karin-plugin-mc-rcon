@@ -1,6 +1,6 @@
-import { isIP } from 'net'
-import lodash from 'node-karin/lodash'
-import moment from 'node-karin/moment'
+import { isIP } from "net"
+import lodash from "node-karin/lodash"
+import moment from "node-karin/moment"
 
 /**
  * 生成随机数
@@ -14,16 +14,17 @@ export const random = (min: number, max: number) => lodash.random(min, max)
  * 睡眠函数
  * @param ms - 毫秒
  */
-export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+export const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms))
 
 /**
  * 使用moment返回时间
  * @param format - 格式
  */
-export const time = (format = 'YYYY-MM-DD HH:mm:ss') => moment().format(format)
+export const time = (format = "YYYY-MM-DD HH:mm:ss") => moment().format(format)
 
 /**
- * 
+ * 校验主机名格式，域名|ip
  */
 export function isValidHost(host: string): boolean {
   // 基础格式检查
@@ -41,5 +42,14 @@ export function isValidHost(host: string): boolean {
       domainRegex.test(label) && // 每个标签格式合法
       !label.startsWith(".") && // 防止连续点号
       !label.endsWith(".") // 结尾不能是点号
+  )
+}
+/**
+ * 校验端口号格式
+ */
+export function isValidPort(port: string): boolean {
+  const num = parseInt(port, 10)
+  return (
+    !Number.isNaN(num) && num >= 1 && num <= 65535 && port === num.toString()
   )
 }

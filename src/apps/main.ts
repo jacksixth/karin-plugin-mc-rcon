@@ -1,4 +1,4 @@
-import { isValidHost, mcMotd } from "@/utils"
+import { config, isValidHost, isValidPort, mcMotd } from "@/utils"
 import karin, { segment } from "node-karin"
 
 export const motd = karin.command(
@@ -43,8 +43,52 @@ export const motd = karin.command(
     }
   },
   {
-    at: true,
     name: "mc-motd", // 插件名称
+    log: true,
+  }
+)
+export const addServer = karin.command(
+  /^#server add (\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/i,
+  async (e) => {
+    if (e.contact.scene != "friend" && e.contact.scene != "groupTemp") {
+      e.reply("❌ 请在私聊中添加服务器")
+      return
+    }
+    if (!e.isAdmin && !e.isMaster) {
+      e.reply("❌ 你没有权限添加服务器")
+      return
+    }
+    const regRes = e.msg.match(
+      /^#server add (\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/i
+    )
+    if (!regRes) {
+      //不可能会走到这里
+      return
+    } else {
+      const [_, host, port, rconPort, password, alias] = regRes
+      // 合法性校验
+      if (!isValidHost(host)) {
+        e.reply("❌ 无效的host格式")
+        return
+      }
+      if (!isValidPort(port) || !isValidPort(rconPort)) {
+        e.reply("❌ 无效的端口号格式")
+        return
+      }
+      // 保存服务器信息
+      const servers = config().servers
+      servers.push({
+        alias,
+        host,
+        port: parseInt(port),
+        rconPort: parseInt(rconPort),
+        password,
+      })
+      e.reply("✅ 服务器添加成功")
+    }
+  },
+  {
+    name: "mc-add-server", // 插件名称
     log: true,
   }
 )
