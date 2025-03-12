@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.2.1...v1.3.0) (2025-03-12)
+
+
+### Features
+
+* **package:** 添加服务目录并更新配置 ([59d9295](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/59d9295ec2d2c33c99eccef73f63d96a0c584559))
+
 ## [1.2.1](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.2.0...v1.2.1) (2025-03-11)
 
 
