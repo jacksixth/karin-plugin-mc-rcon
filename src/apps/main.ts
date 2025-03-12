@@ -49,8 +49,7 @@ export const motd = karin.command(
   }
 )
 
-
+// 群成员退群通知事件
 // karin.accept('notice.groupMemberBan', (e) => {
 //   //
 // })
-
