@@ -1,5 +1,5 @@
-import { config, isValidHost, isValidPort, mcMotd } from "@/utils"
-import karin, { segment } from "node-karin"
+import { config, dirConfig, isValidHost, isValidPort, mcMotd } from "@/utils"
+import karin, { segment, writeJsonSync } from "node-karin"
 
 export const motd = karin.command(
   /^#motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i,
@@ -76,14 +76,15 @@ export const addServer = karin.command(
         return
       }
       // 保存服务器信息
-      const servers = config().servers
-      servers.push({
+      const _config = config()
+      _config.servers.push({
         alias,
         host,
         port: parseInt(port),
         rconPort: parseInt(rconPort),
         password,
       })
+      writeJsonSync(`${dirConfig}/config.json`, _config)
       e.reply("✅ 服务器添加成功")
     }
   },
@@ -92,7 +93,41 @@ export const addServer = karin.command(
     log: true,
   }
 )
-
+export const removeServer = karin.command(
+  /^#server remove (\S+)$/i,
+  async (e) => {
+    if (e.contact.scene != "friend" && e.contact.scene != "groupTemp") {
+      e.reply("❌ 请在私聊中添加服务器")
+      return
+    }
+    if (!e.isAdmin && !e.isMaster) {
+      e.reply("❌ 你没有权限删除服务器")
+      return
+    }
+    const regRes = e.msg.match(/^#server remove (\S+)$/i)
+    if (!regRes) {
+      //不可能会走到这里
+      return
+    } else {
+      const [_, alias] = regRes
+      // 保存服务器信息
+      const _config = config()
+      //查找是否存在该服务器
+      if (!_config.servers.find((item) => item.alias === alias)) {
+        e.reply("❌ 不存在该服务器")
+        return
+      } else {
+        _config.servers = _config.servers.filter((item) => item.alias !== alias)
+        writeJsonSync(`${dirConfig}/config.json`, _config)
+        e.reply("✅ 服务器删除成功")
+      }
+    }
+  },
+  {
+    name: "mc-remove-server", // 插件名称
+    log: true,
+  }
+)
 // 群成员退群通知事件
 // karin.accept('notice.groupMemberBan', (e) => {
 //   //
