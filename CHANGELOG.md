@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.5.0...v1.6.0) (2025-03-13)
+
+
+### Features
+
+* **server:** 添加服务器列表和详情展示功能 ([a5b93f1](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/a5b93f13c25a867d262e16509497a39b8c75ee6c))
+
 ## [1.5.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.4.0...v1.5.0) (2025-03-13)
 
 
