@@ -5,8 +5,13 @@ const loggerPluginName = logger.chalk.hex("#90CAF9")(" ===== mc-rcon ===== ")
 export class rconClient {
   client: Rcon
   private isSending = false // 发送标志
-  constructor(host: string, port: number, password: string) {
-    this.client = new Rcon({ host, port, password, timeout: 5000 })
+  constructor(host: string, port: string, password: string, timeout = 5000) {
+    this.client = new Rcon({
+      host,
+      port: parseInt(port),
+      password,
+      timeout,
+    })
     this.client.on("end", () => {
       this.client.authenticated = false
     })
@@ -32,10 +37,20 @@ export class rconClient {
       logger.info(loggerPluginName, "--- rcon --- ", `正在发送命令：${command}`)
       // 发送命令并等待响应
       const response = await this.client.send(command)
+      logger.info(
+        loggerPluginName,
+        "--- rcon --- ",
+        `命令执行结果：${response}`
+      )
       return response
     } catch (err) {
       // 转换错误类型保持接口稳定
-      throw new Error(`RCON 发送命令错误: ${err}`)
+      logger.error(
+        loggerPluginName,
+        "--- rcon --- ",
+        `RCON 发送命令错误: ${err}`
+      )
+      throw new Error(`错误: ${err}`)
     } finally {
       // 无论成功失败都关闭连接
       if (this.client.authenticated) {
