@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.7.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.6.0...v1.7.0) (2025-03-13)
+
+
+### Features
+
+* **config:** 封禁玩家功能-待实现 ([a753583](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/a7535831da740345d35cdec40a74c9a881444fee))
+
+
+### Bug Fixes
+
+* **main:** 优化服务器添加后的消息提示 ([4138ea3](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/4138ea34d8d077fcfa0bd73937e1bbdebb1f3606))
+* **server:** 新增服务器白名单管理和 RCON 命令功能 ([e862a42](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/e862a4235f5400049cab76c8cb3cfdf7538b5844))
+
 ## [1.6.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.5.0...v1.6.0) (2025-03-13)
 
 
