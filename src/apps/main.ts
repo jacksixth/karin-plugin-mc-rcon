@@ -99,7 +99,10 @@ export const addServer = karin.command(
         password,
       })
       writeJsonSync(`${dirConfig}/config.json`, _config)
-      e.reply("✅ 服务器添加成功")
+      e.reply(
+        "✅ 服务器添加成功,当前存在服务器：" +
+          _config.servers.map((item) => item.alias).join(",")
+      )
     }
   },
   {
