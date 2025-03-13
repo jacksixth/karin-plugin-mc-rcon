@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.4.0...v1.5.0) (2025-03-13)
+
+
+### Features
+
+* **server:** 添加删除服务器功能并优化服务器添加流程 ([fddba92](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/fddba92a113a48771598b11768a919371510b25d))
+
 ## [1.4.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.3.0...v1.4.0) (2025-03-12)
 
 
