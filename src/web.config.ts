@@ -70,7 +70,50 @@ export default {
     components.divider.create("divider2", {
       description: "账号配置",
     }),
-    
+    components.accordionPro.create(
+      "QQNoLinkMcNickname",
+      config().QQNoLinkMcNickname.map((item, index) => {
+        return {
+          ...item,
+          title: item.qqNickname,
+          subtitle: `${item.qqNo}：${item.mcNickname}`,
+        }
+      }),
+      {
+        label: "账号列表",
+        children: components.accordionItem.create("account-item", {
+          title: "账号",
+          subtitle: "配置你的账号",
+          children: [
+            components.input.number("qqNo", {
+              label: "QQ号",
+              rules: [
+                {
+                  regex: /^[1-9][0-9]{4,10}$/,
+                  error: "请输入正确的QQ号",
+                },
+              ],
+            }),
+            components.input.string("qqNickname", {
+              label: "QQ昵称",
+            }),
+            components.input.string("mcNickname", {
+              label: "mc昵称",
+            }),
+          ],
+        }),
+      }
+    ),
+    components.input.group("banQQ", {
+      label: "封禁QQ号组",
+      template: {
+        componentType: "input",
+        key: "banQQ",
+        placeholder: "请输入QQ号",
+        rules: [{ regex: /^[1-9][0-9]{4,10}$/, error: "请输入正确的QQ号" }],
+      },
+      data: [...config().banQQ],
+    }),
   ],
 
   /** 前端点击保存之后调用的方法 */
