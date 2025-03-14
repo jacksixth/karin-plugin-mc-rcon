@@ -809,7 +809,7 @@ export const unban = karin.command(
 )
 //申请白名单 #apply <serverAlias>
 export const apply = karin.command(
-  /^#(?:apply|申请白名单) (\S+)$/i,
+  /^#(?:apply|申请) (\S+)$/i,
   async (e) => {
     const _config = config()
     if (_config.banQQ.includes(e.sender.userId)) {
