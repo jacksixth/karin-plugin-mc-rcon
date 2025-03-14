@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.8.0...v1.9.0) (2025-03-14)
+
+
+### Features
+
+* 完善 voidhelp 命令并更新 README ([acd2fa4](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/acd2fa4335051ce072cf1b1199d27d8451fefc85))
+
 ## [1.8.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.7.0...v1.8.0) (2025-03-14)
 
 
