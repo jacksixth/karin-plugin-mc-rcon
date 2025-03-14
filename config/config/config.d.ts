@@ -9,6 +9,7 @@ export interface Config {
   QQNoLinkMcNickname: {
     //QQ号与mc昵称的对应关系 用于查询玩家的mc昵称
     qqNo: string
+    qqNickname: string
     mcNickname: string
   }[]
   banQQ: string[] //封禁QQ号
