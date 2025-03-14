@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.7.0...v1.8.0) (2025-03-14)
+
+
+### Features
+
+* **README:** 更新命令列表并添加新功能 ([7f85f9e](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/7f85f9e16740bf8606347fe3dd90d0330538c427))
+
+
+### Bug Fixes
+
+* **command:** 修改申请白名单命令的正则表达式 ([a74eeba](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/a74eebabcf86c9a3dd3a98e46c24e05cf6433fce))
+
 ## [1.7.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.6.0...v1.7.0) (2025-03-13)
 
 
