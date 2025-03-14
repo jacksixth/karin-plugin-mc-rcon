@@ -9,9 +9,6 @@ export default {
   },
   /** 动态渲染的组件 */
   components: () => [
-    components.divider.create("divider1", {
-      description: "服务器配置",
-    }),
     components.accordionPro.create(
       "servers",
       config().servers.map((item, index) => {
@@ -67,9 +64,6 @@ export default {
         }),
       }
     ),
-    components.divider.create("divider2", {
-      description: "账号配置",
-    }),
     components.accordionPro.create(
       "QQNoLinkMcNickname",
       config().QQNoLinkMcNickname.map((item, index) => {
