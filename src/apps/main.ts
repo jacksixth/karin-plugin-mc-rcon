@@ -979,69 +979,69 @@ export const voidhelp = karin.command(
     const helpList = [
       {
         cmd: "#motd <host>:<port>",
-        desc: "查询Minecraft服务器状态（支持Java/基岩版）"
+        desc: "查询Minecraft服务器状态（支持Java/基岩版）",
       },
       {
         cmd: "#(server add|添加服务器) <host> <port> <rconPort> <password> <serverAlias>",
-        desc: "添加服务器（需管理员私聊操作）"
+        desc: "添加服务器（需管理员私聊操作）",
       },
       {
         cmd: "#(server remove|删除服务器) <serverAlias>",
-        desc: "删除服务器（需管理员私聊操作）"
+        desc: "删除服务器（需管理员私聊操作）",
       },
       {
         cmd: "#(server list|服务器列表)",
-        desc: "列出所有服务器信息（含在线玩家）"
+        desc: "列出所有服务器信息（含在线玩家）",
       },
       {
         cmd: "#(server info|服务器信息) <serverAlias>",
-        desc: "查看单个服务器详情"
+        desc: "查看单个服务器详情",
       },
       {
         cmd: "#(server wlon|开启白名单) <serverAlias>",
-        desc: "开启服务器白名单（管理员专属）"
+        desc: "开启服务器白名单（管理员专属）",
       },
       {
         cmd: "#(server wloff|关闭白名单) <serverAlias>",
-        desc: "关闭服务器白名单（管理员专属）"
+        desc: "关闭服务器白名单（管理员专属）",
       },
       {
         cmd: "#(server wllist|白名单列表) <serverAlias>",
-        desc: "查看服务器白名单（管理员专属）"
+        desc: "查看服务器白名单（管理员专属）",
       },
       {
         cmd: "#(rcon|发送命令) <serverAlias|ALL> <command>",
-        desc: "发送RCON命令（管理员专属）"
+        desc: "发送RCON命令（管理员专属）",
       },
       {
         cmd: "#(bind|绑定|注册) <昵称>",
-        desc: "绑定QQ与游戏昵称"
+        desc: "绑定QQ与游戏昵称",
       },
       {
         cmd: "#(unbind|解绑|注销)",
-        desc: "解绑游戏昵称"
+        desc: "解绑游戏昵称",
       },
       {
         cmd: "#(ban|封禁) <QQ号>",
-        desc: "封禁玩家（管理员专属）"
+        desc: "封禁玩家（管理员专属）",
       },
       {
         cmd: "#(unban|解禁) <QQ号>",
-        desc: "解封玩家（管理员专属）"
+        desc: "解封玩家（管理员专属）",
       },
       {
         cmd: "#(apply|申请) <serverAlias>",
-        desc: "申请加入服务器白名单"
+        desc: "申请加入服务器白名单",
       },
       {
         cmd: "#(revoke|取消白名单) <QQ号> <serverAlias>",
-        desc: "撤销白名单权限（管理员专属）"
-      }
+        desc: "撤销白名单权限（管理员专属）",
+      },
     ]
 
     let msg = ["❄️ Minecraft 服务器管理插件命令列表 ❄️\n"]
     msg.push("================================")
-    
+
     helpList.forEach((item, index) => {
       msg.push(`${index + 1}. ${item.cmd}`)
       msg.push(`   ➤ ${item.desc}\n`)
@@ -1051,10 +1051,14 @@ export const voidhelp = karin.command(
     msg.push("提示：带<>的为须填参数，且无需输入符号<>")
     msg.push("管理命令需要管理员/主人权限")
 
-    e.reply(msg.join("\n"), { reply: true })
+    e.bot.sendMsg(e.contact, [
+      segment.node(e.bot.account.selfId, e.bot.account.name, [
+        segment.text(msg.join("\n")),
+      ]),
+    ])
   },
   {
     name: "mc-rcon-voidhelp",
-    log: true
+    log: true,
   }
 )
