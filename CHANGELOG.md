@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.9.1](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.9.0...v1.9.1) (2025-03-14)
+
+
+### Bug Fixes
+
+* **config:** web配置页添加账号列表和封禁QQ号组配置 ([d89a017](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/d89a017c58f1e4bce9102344e7c074f95e16cbdd))
+* **mc-rcon:** 优化帮助命令输出格式 ([82476a0](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/82476a082c2f9fb6717869fe680de873e06f3618))
+* **src:** 移除不必要的分割符组件 ([f2c4ee6](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/f2c4ee6762fdb5905f3b7983430a87e8c0244bb3))
+
 ## [1.9.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.8.0...v1.9.0) (2025-03-14)
 
 
