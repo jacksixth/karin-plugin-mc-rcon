@@ -6,12 +6,7 @@ import {
   mcMotd,
   rconClient,
 } from "@/utils"
-import karin, {
-  segment,
-  Elements,
-  writeJsonSync,
-  makeForward,
-} from "node-karin"
+import karin,{ segment, writeJsonSync } from "node-karin"
 //是否正在修改文件
 let isWriteJSON = false
 //motd查询 #motd <host>:<port> | #motd <host> <port>

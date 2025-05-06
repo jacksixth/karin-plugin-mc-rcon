@@ -56,9 +56,11 @@ export default {
                   error: "请输入正确的端口号",
                 },
               ],
+              isRequired: false,
             }),
             components.input.string("password", {
               label: "rcon密码",
+              isRequired: false,
             }),
           ],
         }),
