@@ -5,7 +5,7 @@ import path from "path"
 //部署web页面
 const webPath = path.join(dirPath, "resources", "web")
 app.use("/mc-rcon", express.static(webPath, { index: false }))
-app.use("/mc-rcon/*", (req: any, res: any) => {
+app.use("/mc-rcon/:path*", (req: any, res: any) => {
   res.sendFile(path.join(webPath, "index.html"), (err: any) => {
     if (err) {
       console.error("File send error:", err)
