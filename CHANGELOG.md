@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.9.1...v1.10.0) (2025-05-06)
+
+
+### Features
+
+* **server:** 增加服务器别名重复检查并支持数据库操作 ([15c2483](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/15c24833d84d030ebdfe867dca6e4422caf646ca))
+
 ## [1.9.1](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.9.0...v1.9.1) (2025-03-14)
 
 
