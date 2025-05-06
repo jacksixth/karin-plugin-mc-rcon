@@ -95,6 +95,15 @@ export const addServer = karin.command(
       }
       // 保存服务器信息
       const _config = config()
+      //查找是否存在该服务器
+      if (_config.servers.find((item) => item.alias === alias)) {
+        e.reply(
+          "❌ 该服务器别名已存在别名不可重复，请修改后重试,当前存在服务器：" +
+            _config.servers.map((item) => item.alias).join(","),
+          { reply: true }
+        )
+        return
+      }
       _config.servers.push({
         alias,
         host,

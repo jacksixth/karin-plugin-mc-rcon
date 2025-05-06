@@ -3,13 +3,13 @@ import { Config } from "config/config/config"
 import {
   watch,
   logger,
-  basePath,
+  karinPathBase,
   filesByExt,
   copyConfigSync,
   requireFileSync,
 } from "node-karin"
 
-const dir = `${basePath}/${basename}`
+const dir = `${karinPathBase}/${basename}`
 export const dirConfig = `${dir}/config`
 
 const defDir = `${dirPath}/config`
