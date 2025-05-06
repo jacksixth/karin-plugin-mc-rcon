@@ -5,8 +5,8 @@ import path from "path"
 //部署web页面
 const webPath = path.join(dirPath, "resources", "web")
 app.use("/mc-rcon", express.static(webPath, { index: false }))
-app.use("/mc-rcon/*", (req, res) => {
-  res.sendFile(path.join(webPath, "index.html"), (err) => {
+app.use("/mc-rcon/*", (req: any, res: any) => {
+  res.sendFile(path.join(webPath, "index.html"), (err: any) => {
     if (err) {
       console.error("File send error:", err)
       res.status(500).send("Application loading failed")
@@ -26,7 +26,7 @@ function isJwtExpired(token: string) {
   // 检查 JWT 是否过期
   return payload.exp < currentTime
 }
-router.get("/checkJWT", (req, res) => {
+router.get("/checkJWT", (req: any, res: any) => {
   //获取请求头中的 Authorization 字段
   const authorization = req.headers.authorization || ""
   res.send({ code: isJwtExpired(authorization) ? 401 : 200 })
