@@ -1,15 +1,50 @@
-// import { karinPathBase } from "node-karin"
-// import sqlite3 from "node-karin/sqlite3"
-// import { basename } from "./dir"
-// var db: sqlite3.Database | null = null // 数据库连接
-// const dir = `${karinPathBase}/${basename}`
-// const dbPath = `${dir}/data/db/jack-mc-rcon.db` // 数据库文件路径
+import { karinPathBase } from "node-karin"
+import sqlite3 from "node-karin/sqlite3"
+import { basename } from "./dir"
+import fs from "fs"
+const dir = `${karinPathBase}/${basename}`
+const dbPath = `${dir}/data/jack-mc-rcon.db` // 数据库文件路径
 
-// db = new sqlite3.Database(dbPath, (err) => {
-//   if (err) {
-//     console.error("打开数据库失败:", err.message)
-//   } else {
-//     console.log("打开数据库成功")
-//   }
-// })
+class useSql {
+  private dbPath: string
+  private db: sqlite3.Database | null
+  private initialized: boolean
+  constructor(dbPath: string) {
+    this.dbPath = dbPath
+    this.db = null
+    this.initialized = false
+  }
+  async initialize() {
+    if (this.initialized) {
+      return
+    }
+
+    if (!fs.existsSync(this.dbPath)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+    return new Promise((resolve, reject) => {
+      this.db = new sqlite3.Database(this.dbPath, (err) => {
+        if (err) {
+          console.error("Error opening database " + err.message)
+          reject(err)
+        } else {
+          console.log("数据库已连接！")
+        }
+      })
+      //建表
+      this.db.run(
+        `
+        create table if not exists player (
+          qqNo text primary key,
+          mcNickname text not null,
+          
+          createdTime text default (strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime')),
+        );`,
+        (err) => {
+          reject(err)
+        }
+      )
+    })
+  }
+}
 export {}

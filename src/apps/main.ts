@@ -965,7 +965,7 @@ export const groupMemberAddNotice = karin.accept(
       e.bot.sendMsg(e.contact, [
         segment.at(e.userId),
         segment.text(
-          `你已经绑定了昵称：${findQQ.mcNickname}，如无法加入服务器请联系管理员解除服务器黑名单`
+          `你绑定过昵称：${findQQ.mcNickname}，如无法加入服务器请联系管理员解除服务器黑名单`
         ),
       ])
     }
