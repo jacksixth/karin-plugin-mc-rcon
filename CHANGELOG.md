@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.2](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.10.1...v1.10.2) (2025-05-26)
+
+
+### Bug Fixes
+
+* **src:** 优化代码结构和功能 ([15a3898](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/15a3898d20eca43590057d8042fe1cb7c3a96fbe))
+
 ## [1.10.1](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.10.0...v1.10.1) (2025-05-26)
 
 
