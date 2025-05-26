@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.10.0...v1.10.1) (2025-05-26)
+
+
+### Bug Fixes
+
+* **utils:** 触发git action ([096d2ff](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/096d2ffaa53505df896af0048123a762949cc2ff))
+
 ## [1.10.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.9.1...v1.10.0) (2025-05-06)
 
 
