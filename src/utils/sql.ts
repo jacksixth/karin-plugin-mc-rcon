@@ -47,4 +47,4 @@ class useSql {
     })
   }
 }
-export {}
+export default {}
