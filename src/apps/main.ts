@@ -6,7 +6,7 @@ import {
   mcMotd,
   rconClient,
 } from "@/utils"
-import karin,{ segment, writeJsonSync } from "node-karin"
+import karin, { segment, writeJsonSync } from "node-karin"
 //是否正在修改文件
 let isWriteJSON = false
 //motd查询 #motd <host>:<port> | #motd <host> <port>
@@ -241,9 +241,12 @@ export const listServer = karin.command(
           } catch (error) {
             msgList.push(segment.text("获取在线玩家数据失败\n"))
           }
+        } else {
+          //没获取到或者报错会返回undefined
+          msgList.push(segment.text("获取服务器信息失败，可能是服务器已关闭\n"))
         }
       } catch (error) {
-        msgList.push(segment.text("获取服务器信息失败\n"))
+        msgList.push(segment.text("获取服务器信息失败，可能是服务器已关闭\n"))
       }
       nodeMsg.push(
         segment.node(e.bot.account.selfId, e.bot.account.name, msgList)
