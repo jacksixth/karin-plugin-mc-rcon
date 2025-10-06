@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.10.2...v1.11.0) (2025-10-06)
+
+
+### Features
+
+* **main:** 更新服务器列表命令正则表达式 ([30405ca](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/30405cae443518cd53d2ff887a8763a02dff16ef))
+
 ## [1.10.2](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.10.1...v1.10.2) (2025-05-26)
 
 
