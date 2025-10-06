@@ -179,7 +179,7 @@ export const removeServer = karin.command(
 //列出所有服务器信息（伪造转发消息防刷屏） #server list
 let isListing = false
 export const listServer = karin.command(
-  /^#(?:server list|服务器状态)$/i,
+  /^#?(?:server list|服务器状态)$/i,
   async (e) => {
     const _config = config()
     if (_config.banQQ.includes(e.sender.userId)) {
@@ -979,9 +979,9 @@ export const groupMemberAddNotice = karin.accept(
   }
 )
 //命令列表
-// 查看命令帮助 #voidhelp
-export const voidhelp = karin.command(
-  /^#(?:voidhelp|void帮助)$/i,
+// 查看命令帮助 #help
+export const help = karin.command(
+  /^#(?:help|帮助)$/i,
   async (e) => {
     const helpList = [
       {
@@ -997,7 +997,7 @@ export const voidhelp = karin.command(
         desc: "删除服务器（需管理员私聊操作）",
       },
       {
-        cmd: "#(server list|服务器列表)",
+        cmd: "#(server list|服务器状态)",
         desc: "列出所有服务器信息（含在线玩家）",
       },
       {
@@ -1065,7 +1065,7 @@ export const voidhelp = karin.command(
     ])
   },
   {
-    name: "mc-rcon-voidhelp",
+    name: "mc-rcon-help",
     log: true,
   }
 )
