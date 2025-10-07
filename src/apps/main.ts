@@ -511,6 +511,7 @@ export const rcon = karin.command(
           )
         }
         e.bot.sendMsg(e.contact, nodeMsg)
+        isSending = false
       } else {
         const findServer = _config.servers.find((item) => item.alias === alias)
         if (!findServer) {
@@ -519,6 +520,7 @@ export const rcon = karin.command(
               _config.servers.map((item) => item.alias).join(","),
             { reply: true }
           )
+          isSending = false
           return
         }
         const rcon = new rconClient(
