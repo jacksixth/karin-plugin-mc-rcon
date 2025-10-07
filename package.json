@@ -1,6 +1,6 @@
 {
   "name": "karin-plugin-mc-rcon",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "author": "jack",
   "type": "module",
   "description": "karin-plugin 连接群聊和mc服务器,可查询服务器状态。管理员可通过 rcon 命令管理服务器。 ",
