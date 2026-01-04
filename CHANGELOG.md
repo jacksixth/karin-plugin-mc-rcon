@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.12.0...v1.13.0) (2026-01-04)
+
+
+### Features
+
+* 重试发布 ([1c959da](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/1c959dacfbf2d855c5f5cc68ff4695e0f98443a5))
+
 ## [1.12.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.11.2...v1.12.0) (2026-01-04)
 
 
