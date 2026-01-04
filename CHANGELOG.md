@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.11.2...v1.12.0) (2026-01-04)
+
+
+### Features
+
+* **config:** 添加入群欢迎文案配置项 ([d29ee27](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/d29ee271d9b8b6a0a8d7df52d026d427f3114122))
+
 ## [1.11.2](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.11.1...v1.11.2) (2026-01-04)
 
 
