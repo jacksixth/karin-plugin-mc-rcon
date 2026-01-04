@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.11.2](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.11.1...v1.11.2) (2026-01-04)
+
+
+### Bug Fixes
+
+* **deps:** 升级node和pnpm版本 ([822df7a](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/822df7aca7c613614be8daf61a90a46003ecea1d))
+* **utils:** 启用SQL工具模块的默认导出 ([d16e6f2](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/d16e6f22e117e55c0c51d954dc0205915273ad0b))
+
 ## [1.11.1](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.11.0...v1.11.1) (2025-10-07)
 
 
