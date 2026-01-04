@@ -951,12 +951,14 @@ export const groupMemberAddNotice = karin.accept(
   "notice.groupMemberAdd",
   async (e) => {
     //加群
-    e.bot.sendMsg(e.contact, [
-      segment.at(e.userId),
-      segment.text(" 欢迎加入本群，发言前请先阅读群公告"),
-    ])
     //查看是否有绑定
     const _config = config()
+    e.bot.sendMsg(e.contact, [
+      segment.at(e.userId),
+      segment.text(
+        " " + _config.welcomeMessage || "欢迎加入本群，发言前请先阅读群公告"
+      ),
+    ])
     const findQQ = _config.QQNoLinkMcNickname.find(
       (item) => item.qqNo === e.userId
     )

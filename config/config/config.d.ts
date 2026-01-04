@@ -12,5 +12,6 @@ export interface Config {
     qqNickname: string
     mcNickname: string
   }[]
-  banQQ: string[] //封禁QQ号
+  banQQ: string[] ,//封禁QQ号
+  welcomeMessage: string //入群欢迎文案
 }
