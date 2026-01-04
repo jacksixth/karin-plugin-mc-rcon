@@ -199,11 +199,7 @@ export const listServer = karin.command(
       let msgList = []
       const element = _config.servers[index]
       msgList.push(
-        segment.text(
-          `${element.alias} ${element.host}${
-            element.port == "25565" ? ":" + element.port : ""
-          }\n`
-        )
+        segment.text(`${element.alias} ${element.host}${":" + element.port}\n`)
       )
       try {
         const motd = await mcMotd(element.host, parseInt(element.port))
@@ -290,9 +286,7 @@ export const serverInfo = karin.command(
     let msgList = []
     msgList.push(
       segment.text(
-        `${findServer.alias} ${findServer.host}${
-          findServer.port == "25565" ? ":" + findServer.port : ""
-        }\n`
+        `${findServer.alias} ${findServer.host}${":" + findServer.port}\n`
       )
     )
     try {
