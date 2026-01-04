@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.11.0...v1.11.1) (2025-10-07)
+
+
+### Bug Fixes
+
+* **main:** 修复发送消息后未重置发送状态的问题 ([d97ac07](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/d97ac0761538be1d6ceb0de0a9172d3230c25e40))
+
 ## [1.11.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.10.2...v1.11.0) (2025-10-06)
 
 
