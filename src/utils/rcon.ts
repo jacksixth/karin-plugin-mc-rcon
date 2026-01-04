@@ -58,6 +58,7 @@ export class rconClient {
         this.client.authenticated = false
       }
       this.isSending = false
+      logger.info(loggerPluginName, "--- rcon --- ", "已关闭RCON连接")
     }
   }
 }
