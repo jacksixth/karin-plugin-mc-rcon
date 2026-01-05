@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.14.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.13.0...v1.14.0) (2026-01-05)
+
+
+### Features
+
+* 移除无用的定时任务和数据库功能 ([0967e95](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/0967e95dd051d85ef18cbcf5a52ef684b758d53d))
+
+
+### Bug Fixes
+
+* **utils:** 移除未使用的SQL模块导出 ([009101a](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/009101af53fb96575b61e35d17c20e73721ce776))
+
 ## [1.13.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.12.0...v1.13.0) (2026-01-04)
 
 
