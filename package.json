@@ -35,12 +35,10 @@
   "karin": {
     "main": "src/index.ts",
     "apps": [
-      "lib/apps",
-      "lib/services"
+      "lib/apps"
     ],
     "ts-apps": [
-      "src/apps",
-      "src/services"
+      "src/apps"
     ],
     "web": "./lib/web.config.js",
     "ts-web": "./src/web.config.ts",
@@ -57,7 +55,6 @@
     "/lib/**/*.d.ts",
     "/config/config/*.json",
     "/config/config/*.d.ts",
-    "resources",
     "LICENSE",
     "package.json",
     "README.md"
