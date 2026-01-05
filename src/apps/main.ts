@@ -60,122 +60,6 @@ export const motd = karin.command(
     log: true,
   }
 )
-// 添加服务器 #server add <host> <port> <rconPort> <password> <serverAlias>
-export const addServer = karin.command(
-  /^#(?:server add|添加服务器) (\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/i,
-  async (e) => {
-    if (isWriteJSON) {
-      e.reply("❌ 其他命令正在修改文件，请稍后再试", { reply: true })
-      return
-    }
-    if (e.contact.scene != "friend" && e.contact.scene != "groupTemp") {
-      e.reply("❌ 请在私聊中添加服务器", { reply: true })
-      return
-    }
-    if (!e.isAdmin && !e.isMaster) {
-      e.reply("❌ 你没有权限使用该命令", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(
-      /^#(?:server add|添加服务器) (\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/i
-    )
-    if (!regRes) {
-      //不可能会走到这里
-      return
-    } else {
-      const [_, host, port, rconPort, password, alias] = regRes
-      // 合法性校验
-      if (!isValidHost(host)) {
-        e.reply("❌ 无效的host格式", { reply: true })
-        return
-      }
-      if (!isValidPort(port) || !isValidPort(rconPort)) {
-        e.reply("❌ 无效的端口号格式", { reply: true })
-        return
-      }
-      // 保存服务器信息
-      const _config = config()
-      //查找是否存在该服务器
-      if (_config.servers.find((item) => item.alias === alias)) {
-        e.reply(
-          "❌ 该服务器别名已存在别名不可重复，请修改后重试,当前存在服务器：" +
-            _config.servers.map((item) => item.alias).join(","),
-          { reply: true }
-        )
-        return
-      }
-      _config.servers.push({
-        alias,
-        host,
-        port: port,
-        rconPort: rconPort,
-        password,
-      })
-      isWriteJSON = true
-      writeJsonSync(`${dirConfig}/config.json`, _config)
-      e.reply(
-        "✅ 服务器添加成功,当前存在服务器：" +
-          _config.servers.map((item) => item.alias).join(","),
-        { reply: true }
-      )
-      isWriteJSON = false
-    }
-  },
-  {
-    name: "mc-rcon-addServer", // 插件名称
-    log: true,
-  }
-)
-// 删除服务器 #server remove <serverAlias>
-export const removeServer = karin.command(
-  /^#(?:server remove|删除服务器) (\S+)$/i,
-  async (e) => {
-    if (isWriteJSON) {
-      e.reply("❌ 其他命令正在修改文件，请稍后再试", { reply: true })
-      return
-    }
-    if (e.contact.scene != "friend" && e.contact.scene != "groupTemp") {
-      e.reply("❌ 请在私聊中添加服务器", { reply: true })
-      return
-    }
-    if (!e.isAdmin && !e.isMaster) {
-      e.reply("❌ 你没有权限使用该命令", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(/^#(?:server remove|删除服务器) (\S+)$/i)
-    if (!regRes) {
-      //不可能会走到这里
-      return
-    } else {
-      const [_, alias] = regRes
-      // 保存服务器信息
-      const _config = config()
-      //查找是否存在该服务器
-      if (!_config.servers.find((item) => item.alias === alias)) {
-        e.reply(
-          "❌ 不存在该服务器,当前存在服务器：" +
-            _config.servers.map((item) => item.alias).join(","),
-          { reply: true }
-        )
-        return
-      } else {
-        _config.servers = _config.servers.filter((item) => item.alias !== alias)
-        isWriteJSON = true
-        writeJsonSync(`${dirConfig}/config.json`, _config)
-        e.reply(
-          "✅ 服务器删除成功,当前存在服务器：" +
-            _config.servers.map((item) => item.alias).join(","),
-          { reply: true }
-        )
-        isWriteJSON = false
-      }
-    }
-  },
-  {
-    name: "mc-rcon-removeServer", // 插件名称
-    log: true,
-  }
-)
 //列出所有服务器信息（伪造转发消息防刷屏） #server list
 let isListing = false
 export const listServer = karin.command(
@@ -253,167 +137,6 @@ export const listServer = karin.command(
   },
   {
     name: "mc-rcon-listServer", // 插件名称
-    log: true,
-  }
-)
-//查看单个服务器详情 #server info <serverAlias>
-export const serverInfo = karin.command(
-  /^#(?:server info|服务器信息) (\S+)$/i,
-  async (e) => {
-    const _config = config()
-    if (_config.banQQ.includes(e.sender.userId)) {
-      e.reply("❌ 你被封禁了", { reply: true })
-    }
-    if (isListing) {
-      e.reply("❌ 已经正在查询服务器详情了，请耐心等待", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(/^#(?:server info|服务器信息) (\S+)$/i)
-    if (!regRes) {
-      //不可能会走到这里
-      return
-    }
-    const [_, alias] = regRes
-    const findServer = _config.servers.find((item) => item.alias === alias)
-    if (!findServer) {
-      e.reply(
-        "❌ 不存在该服务器，当前存在服务器" +
-          _config.servers.map((item) => item.alias).join(","),
-        { reply: true }
-      )
-      return
-    }
-    let msgList = []
-    msgList.push(
-      segment.text(
-        `${findServer.alias} ${findServer.host}${":" + findServer.port}\n`
-      )
-    )
-    try {
-      const motd = await mcMotd(findServer.host, parseInt(findServer.port))
-      if (motd) {
-        if (motd.favicon) {
-          msgList.push(segment.image(motd.favicon))
-        }
-        if (motd.description) {
-          msgList.push(segment.text(motd.description + "\n"))
-        }
-        msgList.push(
-          segment.text(
-            `服务器版本：${motd.type} ${motd.version}\n服务器人数:${motd.players.online}/${motd.players.max}\n`
-          )
-        )
-        const rcon = new rconClient(
-          findServer.host,
-          findServer.rconPort,
-          findServer.password
-        )
-        try {
-          const listRes = await rcon.send("list")
-          if (listRes) {
-            //返回的list信息处理 中文冒号和英文冒号都可能存在
-            //There are 2 of a max of 99 players online: xxx1, xxxx2
-            if (listRes.includes(":") && listRes.split(":").length > 1)
-              msgList.push(
-                segment.text("在线玩家：" + listRes.split(":")[1] + "\n")
-              )
-            else if (listRes.includes("：") && listRes.split("：").length > 1)
-              msgList.push(
-                segment.text("在线玩家：" + listRes.split("：")[1] + "\n")
-              )
-          }
-        } catch (error) {
-          msgList.push(segment.text("获取在线玩家数据失败\n"))
-        }
-      }
-    } catch (error) {
-      msgList.push(segment.text("获取服务器信息失败\n"))
-    }
-    e.reply(msgList, { reply: true })
-    isListing = false
-  },
-  {
-    name: "mc-rcon-infoServer", // 插件名称
-    log: true,
-  }
-)
-// 开启服务器白名单（管理员专属） `#server wlon <serverAlias>`
-export const wlon = karin.command(
-  /^#(?:server wlon|开启白名单) (\S+)$/i,
-  async (e) => {
-    const _config = config()
-    if (!e.isAdmin && !e.isMaster) {
-      e.reply("❌ 你没有权限使用该命令", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(/^#(?:server wlon|开启白名单) (\S+)$/i)
-    if (!regRes) {
-      return
-    }
-    const [_, alias] = regRes
-    const findServer = _config.servers.find((item) => item.alias === alias)
-    if (!findServer) {
-      e.reply(
-        "❌ 不存在该服务器，当前存在服务器" +
-          _config.servers.map((item) => item.alias).join(","),
-        { reply: true }
-      )
-      return
-    }
-    try {
-      const rcon = new rconClient(
-        findServer.host,
-        findServer.rconPort,
-        findServer.password
-      )
-      const res = await rcon.send("whitelist on")
-      e.reply("✅ 服务器白名单已开启,命令返回：" + res, { reply: true })
-    } catch (error) {
-      e.reply("❌ 服务器白名单开启失败,命令返回：" + error, { reply: true })
-    }
-  },
-  {
-    name: "mc-rcon-wlon", // 插件名称
-    log: true,
-  }
-)
-// 关闭服务器白名单（管理员专属） `#server wloff <serverAlias>`
-export const wloff = karin.command(
-  /^#(?:server wloff|关闭白名单) (\S+)$/i,
-  async (e) => {
-    const _config = config()
-    if (!e.isAdmin && !e.isMaster) {
-      e.reply("❌ 你没有权限使用该命令", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(/^#(?:server wloff|关闭白名单) (\S+)$/i)
-    if (!regRes) {
-      return
-    }
-    const [_, alias] = regRes
-    const findServer = _config.servers.find((item) => item.alias === alias)
-    if (!findServer) {
-      e.reply(
-        "❌ 不存在该服务器，当前存在服务器" +
-          _config.servers.map((item) => item.alias).join(","),
-        { reply: true }
-      )
-      return
-    }
-    try {
-      const rcon = new rconClient(
-        findServer.host,
-        findServer.rconPort,
-        findServer.password
-      )
-      const res = await rcon.send("whitelist off")
-      e.reply("✅ 服务器白名单已关闭,命令返回：" + res, { reply: true })
-    } catch (error) {
-      e.reply("❌ 服务器白名单关闭失败,命令返回：" + error, { reply: true })
-    }
-  },
-  {
-    name: "mc-rcon-wloff", // 插件名称
     log: true,
   }
 )
@@ -902,43 +625,9 @@ export const revoke = karin.command(
 export const groupMemberBanNotice = karin.accept(
   "notice.groupMemberBan",
   async (e) => {
-    //退群 清除绑定 在各服务器中ban掉
-    const _config = config()
-    if (isWriteJSON) {
-      e.bot.sendMsg(e.contact, [
-        segment.text("❌ 其他命令正在修改文件，请稍后再试"),
-      ])
-      return
-    }
+    //退群
     const msgList = []
     msgList.push(segment.text(`QQ号${e.userId}离开了我们\n`))
-    const findNickname = _config.QQNoLinkMcNickname.find(
-      (item) => item.qqNo == e.userId
-    )
-    if (!findNickname) {
-      msgList.push(segment.text("该QQ号未绑定昵称\n"))
-      return
-    }
-    for (let index = 0; index < _config.servers.length; index++) {
-      const element = _config.servers[index]
-      const rcon = new rconClient(
-        element.host,
-        element.rconPort,
-        element.password
-      )
-      try {
-        const res = await rcon.send(`ban ${findNickname.mcNickname}`)
-        msgList.push(
-          segment.text(
-            `✅ ${element.alias}服务器已ban${findNickname.mcNickname}\n命令返回：${res}\n`
-          )
-        )
-      } catch (error) {
-        msgList.push(
-          segment.text(`❌ ${element.alias}服务器ban命令执行失败:${error}\n`)
-        )
-      }
-    }
     e.bot.sendMsg(e.contact, msgList)
   },
   {
@@ -956,7 +645,7 @@ export const groupMemberAddNotice = karin.accept(
     e.bot.sendMsg(e.contact, [
       segment.at(e.userId),
       segment.text(
-        " " + _config.welcomeMessage || "欢迎加入本群，发言前请先阅读群公告"
+        " " + "欢迎加入本群，发言前请先阅读群公告"
       ),
     ])
     const findQQ = _config.QQNoLinkMcNickname.find(
@@ -966,7 +655,7 @@ export const groupMemberAddNotice = karin.accept(
       e.bot.sendMsg(e.contact, [
         segment.at(e.userId),
         segment.text(
-          `你绑定过昵称：${findQQ.mcNickname}，如无法加入服务器请联系管理员解除服务器黑名单`
+          `你绑定过昵称：${findQQ.mcNickname}，欢迎回家！`
         ),
       ])
     }
@@ -987,28 +676,8 @@ export const help = karin.command(
         desc: "查询Minecraft服务器状态（支持Java/基岩版）",
       },
       {
-        cmd: "#(server add|添加服务器) <host> <port> <rconPort> <password> <serverAlias>",
-        desc: "添加服务器（需管理员私聊操作）",
-      },
-      {
-        cmd: "#(server remove|删除服务器) <serverAlias>",
-        desc: "删除服务器（需管理员私聊操作）",
-      },
-      {
         cmd: "#(server list|服务器状态)",
         desc: "列出所有服务器信息（含在线玩家）",
-      },
-      {
-        cmd: "#(server info|服务器信息) <serverAlias>",
-        desc: "查看单个服务器详情",
-      },
-      {
-        cmd: "#(server wlon|开启白名单) <serverAlias>",
-        desc: "开启服务器白名单（管理员专属）",
-      },
-      {
-        cmd: "#(server wloff|关闭白名单) <serverAlias>",
-        desc: "关闭服务器白名单（管理员专属）",
       },
       {
         cmd: "#(server wllist|白名单列表) <serverAlias>",

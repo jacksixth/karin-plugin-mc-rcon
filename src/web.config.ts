@@ -109,12 +109,7 @@ export default {
         rules: [{ regex: /^[1-9][0-9]{4,10}$/, error: "请输入正确的QQ号" }],
       },
       data: [...config().banQQ],
-    }),
-    components.input.string("welcomeMessage", {
-      label: "入群欢迎文案",
-      defaultValue:
-        config().welcomeMessage || "欢迎加入本群，发言前请先阅读群公告",
-    }),
+    })
   ],
 
   /** 前端点击保存之后调用的方法 */

@@ -14,11 +14,11 @@ lerna-debug.log*
 # 编辑器配置
 .idea/
 .vscode/
-
+#打包文件
+/lib/
 # 临时文件
 /logs/
 /temp/
-
 # 依赖
 node_modules/
 config/config/pm2.yaml
