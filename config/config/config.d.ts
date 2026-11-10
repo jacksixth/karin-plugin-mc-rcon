@@ -6,11 +6,4 @@ export interface Config {
     rconPort: string //服务器rcon端口 一般是25575
     password: string //服务器rcon密码 建议复杂点
   }[]
-  QQNoLinkMcNickname: {
-    //QQ号与mc昵称的对应关系 用于查询玩家的mc昵称
-    qqNo: string
-    qqNickname: string
-    mcNickname: string
-  }[]
-  banQQ: string[] ,//封禁QQ号
 }

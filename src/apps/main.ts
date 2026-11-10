@@ -1,59 +1,64 @@
 import {
+  afterColon,
   config,
-  dirConfig,
   isValidHost,
   isValidPort,
   mcMotd,
   rconClient,
 } from "@/utils"
-import karin, { segment, writeJsonSync } from "node-karin"
-//是否正在修改文件
-let isWriteJSON = false
+import karin, {
+  segment,
+  type Elements,
+  type Message,
+} from "node-karin"
+/**
+ * 发送转发节点；qqbot 协议不支持转发节点，退化成一条普通文本+图片消息
+ */
+const sendForward = async (e: Message, msgs: Elements[][]) => {
+  if (e.bot.adapter.protocol === "qqbot") {
+    // qqbot 不支持转发节点，直接文本+图片发一条
+    await e.bot.sendMsg(e.contact, msgs.flat())
+    return
+  }
+  await e.bot.sendMsg(
+    e.contact,
+    msgs.map((list) =>
+      segment.node(e.bot.account.selfId, e.bot.account.name, list)
+    )
+  )
+}
 //motd查询 #motd <host>:<port> | #motd <host> <port>
+const motdReg = /^#?motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i
 export const motd = karin.command(
-  /^#motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i,
+  motdReg,
   async (e) => {
-    const regRes = e.msg.match(/^#?motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i)
-    if (!regRes) {
-      //不可能会走到这里
-      return
-    } else {
-      const _config = config()
-      if (_config.banQQ.includes(e.sender.userId)) {
-        e.reply("❌ 你被封禁了", { reply: true })
-      }
-      const host = regRes[1]
-      const port = regRes[2] || regRes[3]
-      // 添加端口默认值处理
-      const defaultPort = 25565
-      const parsedPort = port ? parseInt(port) : defaultPort
+    const regRes = e.msg.match(motdReg)
+    if (!regRes) return
+    const [, host, colonPort, spacePort] = regRes
+    const port = colonPort || spacePort
 
-      // 合法性校验
-      if (!isValidHost(host)) {
-        e.reply("❌ 无效的主机名格式", { reply: true })
-        return
-      }
-      if (parsedPort < 1 || parsedPort > 65535) {
-        e.reply("❌ 端口号需在 1-65535 之间", { reply: true })
-        return
-      }
-      const data = await mcMotd(host, parsedPort)
-      if (data) {
-        let msgList = []
-        msgList.push(segment.text(data.type + " " + data.version + "\n"))
-        if (data.favicon) {
-          msgList.push(segment.image(data.favicon))
-        }
-        msgList.push(
-          segment.text(data.players.online + "/" + data.players.max + "\n")
-        )
-        if (data.description)
-          msgList.push(segment.text(data.description + "\n"))
-        e.bot.sendMsg(e.contact, msgList)
-      } else {
-        e.reply("❌ 获取服务器状态失败，可能是服务器未开启。", { reply: true })
-      }
+    // 合法性校验
+    if (!isValidHost(host)) {
+      return e.reply("❌ 无效的主机名格式", { reply: true })
     }
+    if (!isValidPort(port)) {
+      return e.reply("❌ 端口号需在 1-65535 之间", { reply: true })
+    }
+    const data = await mcMotd(host, parseInt(port, 10)).catch(() => undefined)
+    if (!data) {
+      return e.reply("❌ 获取服务器状态失败，可能是服务器未开启。", {
+        reply: true,
+      })
+    }
+    const msgList: Elements[] = [
+      segment.text(data.type + " " + data.version + "\n"),
+    ]
+    if (data.favicon) msgList.push(segment.image(data.favicon))
+    msgList.push(
+      segment.text(data.players.online + "/" + data.players.max + "\n")
+    )
+    if (data.description) msgList.push(segment.text(data.description + "\n"))
+    e.bot.sendMsg(e.contact, msgList)
   },
   {
     name: "mc-rcon-motd", // 插件名称
@@ -66,602 +71,140 @@ export const listServer = karin.command(
   /^#?(?:server list|服务器状态)$/i,
   async (e) => {
     const _config = config()
-    if (_config.banQQ.includes(e.sender.userId)) {
-      e.reply("❌ 你被封禁了", { reply: true })
-    }
     if (isListing) {
-      e.reply("❌ 已经正在查询服务器详情了，请耐心等待", { reply: true })
-      return
+      return e.reply("❌ 已经正在查询服务器详情了，请耐心等待", { reply: true })
     }
     if (_config.servers.length === 0) {
-      e.reply("❌ 服务器列表为空"), { reply: true }
-      return
+      return e.reply("❌ 服务器列表为空", { reply: true })
     }
 
-    let nodeMsg = []
-    for (let index = 0; index < _config.servers.length; index++) {
-      let msgList = []
-      const element = _config.servers[index]
-      msgList.push(
-        segment.text(`${element.alias} ${element.host}${":" + element.port}\n`)
-      )
-      try {
-        const motd = await mcMotd(element.host, parseInt(element.port))
-        if (motd) {
-          if (motd.favicon) {
-            msgList.push(segment.image(motd.favicon))
-          }
-          if (motd.description) {
-            msgList.push(segment.text(motd.description + "\n"))
-          }
-          msgList.push(
-            segment.text(
-              `服务器版本：${motd.type} ${motd.version}\n服务器人数:${motd.players.online}/${motd.players.max}\n`
-            )
-          )
-          const rcon = new rconClient(
-            element.host,
-            element.rconPort,
-            element.password
-          )
-          try {
-            const listRes = await rcon.send("list")
-            if (listRes) {
-              //返回的list信息处理 中文冒号和英文冒号都可能存在
-              //There are 2 of a max of 99 players online: xxx1, xxxx2
-              if (listRes.includes(":") && listRes.split(":").length > 1)
-                msgList.push(
-                  segment.text("在线玩家：" + listRes.split(":")[1] + "\n")
-                )
-              else if (listRes.includes("：") && listRes.split("：").length > 1)
-                msgList.push(
-                  segment.text("在线玩家：" + listRes.split("：")[1] + "\n")
-                )
+    isListing = true
+    try {
+      const msgs: Elements[][] = []
+      for (const element of _config.servers) {
+        const msgList: Elements[] = []
+        msgList.push(
+          segment.text(`${element.alias} ${element.host}:${element.port}\n`)
+        )
+        try {
+          const motd = await mcMotd(element.host, parseInt(element.port))
+          if (motd) {
+            if (motd.favicon) {
+              msgList.push(segment.image(motd.favicon))
             }
-          } catch (error) {
-            msgList.push(segment.text("获取在线玩家数据失败\n"))
+            if (motd.description) {
+              msgList.push(segment.text(motd.description + "\n"))
+            }
+            msgList.push(
+              segment.text(
+                `服务器版本：${motd.type} ${motd.version}\n服务器人数:${motd.players.online}/${motd.players.max}\n`
+              )
+            )
+            const rcon = new rconClient(
+              element.host,
+              element.rconPort,
+              element.password
+            )
+            try {
+              //There are 2 of a max of 99 players online: xxx1, xxxx2
+              const players = afterColon(await rcon.send("list"))
+              if (players) {
+                msgList.push(segment.text("在线玩家：" + players + "\n"))
+              }
+            } catch (error) {
+              msgList.push(segment.text("获取在线玩家数据失败\n"))
+            }
+          } else {
+            //没获取到或者报错会返回undefined
+            msgList.push(
+              segment.text("获取服务器信息失败，可能是服务器已关闭\n")
+            )
           }
-        } else {
-          //没获取到或者报错会返回undefined
+        } catch (error) {
           msgList.push(segment.text("获取服务器信息失败，可能是服务器已关闭\n"))
         }
-      } catch (error) {
-        msgList.push(segment.text("获取服务器信息失败，可能是服务器已关闭\n"))
+        msgs.push(msgList)
       }
-      nodeMsg.push(
-        segment.node(e.bot.account.selfId, e.bot.account.name, msgList)
-      )
+      await sendForward(e, msgs)
+    } finally {
+      isListing = false
     }
-    e.bot.sendMsg(e.contact, nodeMsg)
-    isListing = false
   },
   {
     name: "mc-rcon-listServer", // 插件名称
     log: true,
   }
 )
-// 查看服务器白名单（管理员专属） `#server wllist <serverAlias>`
-export const wllist = karin.command(
-  /^#(?:server wllist|白名单列表) (\S+)$/i,
-  async (e) => {
-    const _config = config()
-    if (!e.isAdmin && !e.isMaster) {
-      e.reply("❌ 你没有权限使用该命令", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(/^#(?:server wllist|白名单列表) (\S+)$/i)
-    if (!regRes) {
-      return
-    }
-    const [_, alias] = regRes
-    const findServer = _config.servers.find((item) => item.alias === alias)
-    if (!findServer) {
-      e.reply(
-        "❌ 不存在该服务器，当前存在服务器" +
-          _config.servers.map((item) => item.alias).join(","),
-        { reply: true }
-      )
-      return
-    }
-    try {
-      const rcon = new rconClient(
-        findServer.host,
-        findServer.rconPort,
-        findServer.password
-      )
-      const res = await rcon.send("whitelist list")
-      if (res) {
-        if (res.includes(":") && res.split(":").length > 1)
-          e.reply("✅ 服务器白名单列表：" + res.split(":")[1], { reply: true })
-        else if (res.includes("：") && res.split("：").length > 1)
-          e.reply("✅ 服务器白名单列表：" + res.split("：")[1], { reply: true })
-        else e.reply("✅ 服务器白名单列表为空")
-      }
-    } catch (error) {
-      e.reply("❌ 查看服务器白名单失败,命令返回：" + error, { reply: true })
-    }
-  },
-  {
-    name: "mc-rcon-wllist", // 插件名称
-    log: true,
-  }
-)
 // 向单个/所有服务器发送 RCON 命令（管理员专属） #rcon <serverAlias|ALL> <commend>
+const rconReg = /^#(?:rcon|发送命令) (\S+) (.+)$/i
 let isSending = false
 export const rcon = karin.command(
-  /^#(?:rcon|发送命令) (\S+) (.+)$/i,
+  rconReg,
   async (e) => {
     if (!e.isAdmin && !e.isMaster) {
-      e.reply("❌ 你没有权限使用该命令", { reply: true })
-      return
-    } else {
-      if (isSending) {
-        e.reply("❌ 已有命令正在执行，请等待当前命令完成", { reply: true })
-        return
-      }
-      isSending = true
-      const _config = config()
-      const regRes = e.msg.match(/^#(?:rcon|发送命令) (\S+) (.+)$/i)
-      if (!regRes) {
-        return
-      }
-      const [_, alias, commend] = regRes
+      return e.reply("❌ 你没有权限使用该命令", { reply: true })
+    }
+    if (isSending) {
+      return e.reply("❌ 已有命令正在执行，请等待当前命令完成", { reply: true })
+    }
+    const regRes = e.msg.match(rconReg)
+    if (!regRes) return
+    const _config = config()
+    const [_, alias, commend] = regRes
+    isSending = true
+    try {
       if (alias === "ALL") {
-        let nodeMsg = []
-        for (let index = 0; index < _config.servers.length; index++) {
-          const element = _config.servers[index]
-          let msgList = []
-          msgList.push(segment.text(`${element.alias} 执行命令：${commend}\n`))
+        const msgs: Elements[][] = []
+        for (const element of _config.servers) {
+          const msgList: Elements[] = [
+            segment.text(`${element.alias} 执行命令：${commend}\n`),
+          ]
           const rcon = new rconClient(
             element.host,
             element.rconPort,
             element.password
           )
           try {
-            const res = await rcon.send(commend)
-            msgList.push(segment.text(`✅ 执行结果：${res}\n`))
+            msgList.push(
+              segment.text(`✅ 执行结果：${await rcon.send(commend)}\n`)
+            )
           } catch (error) {
             msgList.push(segment.text(`❌ 执行失败:${error}\n`))
           }
-          nodeMsg.push(
-            segment.node(e.bot.account.selfId, e.bot.account.name, msgList)
-          )
+          msgs.push(msgList)
         }
-        e.bot.sendMsg(e.contact, nodeMsg)
-        isSending = false
-      } else {
-        const findServer = _config.servers.find((item) => item.alias === alias)
-        if (!findServer) {
-          e.reply(
-            "❌ 不存在该服务器，当前存在服务器" +
-              _config.servers.map((item) => item.alias).join(","),
-            { reply: true }
-          )
-          isSending = false
-          return
-        }
-        const rcon = new rconClient(
-          findServer.host,
-          findServer.rconPort,
-          findServer.password
-        )
-        try {
-          const res = await rcon.send(commend)
-          e.reply(`✅ ${findServer.alias} 执行成功：${res}`, { reply: true })
-        } catch (error) {
-          e.reply(`❌ ${findServer.alias} 执行失败:${error}`, { reply: true })
-        }
+        await sendForward(e, msgs)
+        return
       }
+      const findServer = _config.servers.find((item) => item.alias === alias)
+      if (!findServer) {
+        return e.reply(
+          "❌ 不存在该服务器，当前存在服务器" +
+            _config.servers.map((item) => item.alias).join(","),
+          { reply: true }
+        )
+      }
+      const rcon = new rconClient(
+        findServer.host,
+        findServer.rconPort,
+        findServer.password
+      )
+      try {
+        return e.reply(
+          `✅ ${findServer.alias} 执行成功：${await rcon.send(commend)}`,
+          { reply: true }
+        )
+      } catch (error) {
+        return e.reply(`❌ ${findServer.alias} 执行失败:${error}`, {
+          reply: true,
+        })
+      }
+    } finally {
       isSending = false
     }
   },
   {
     name: "mc-rcon-rcon", // 插件名称
-    log: true,
-  }
-)
-//绑定 QQ 号与游戏昵称 #bind <nickName>
-export const bind = karin.command(
-  /^#(?:bind|绑定|注册) (\S+)$/i,
-  async (e) => {
-    const _config = config()
-    if (_config.banQQ.includes(e.sender.userId)) {
-      e.reply("❌ 你被封禁了", { reply: true })
-    }
-    if (isWriteJSON) {
-      e.reply("❌ 其他命令正在修改文件，请稍后再试", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(/^#(?:bind|绑定|注册) (\S+)$/i)
-    if (!regRes) {
-      return
-    } else {
-      const [_, nickName] = regRes
-      const findQQ = _config.QQNoLinkMcNickname.find(
-        (item) => item.qqNo === e.sender.userId
-      )
-      if (findQQ) {
-        e.reply(`❌ 你已经绑定了昵称，请使用 #unbind 解绑后再绑定新的昵称`, {
-          reply: true,
-        })
-        return
-      }
-      const findNickname = _config.QQNoLinkMcNickname.find(
-        (item) => item.mcNickname === nickName
-      )
-      if (findNickname) {
-        try {
-          // 群聊中该qq号已不在群聊中，无法at 会报错 需要管理员解绑
-          await e.reply(
-            [
-              segment.text("❌ 该昵称已被绑定，请联系 "),
-              segment.at(findNickname.qqNo),
-              segment.text(" 使用 #unbind 解绑"),
-            ],
-            {
-              reply: true,
-            }
-          )
-        } catch (error) {
-          e.reply(
-            `❌ 该昵称已被绑定且主人已不在群聊中，请联系管理员使用 #unbind <${findNickname.qqNo}> 解绑`,
-            {
-              reply: true,
-            }
-          )
-        }
-
-        return
-      }
-      _config.QQNoLinkMcNickname.push({
-        qqNo: e.sender.userId,
-        qqNickname: e.sender.name,
-        mcNickname: nickName,
-      })
-      isWriteJSON = true
-      writeJsonSync(`${dirConfig}/config.json`, _config)
-      e.reply(`✅ 绑定成功，你的昵称为：${nickName}`, { reply: true })
-      isWriteJSON = false
-    }
-  },
-  {
-    name: "mc-rcon-bind", // 插件名称
-    log: true,
-  }
-)
-//解绑游戏昵称 #unbind
-export const unbind = karin.command(
-  /^#(?:unbind|解绑|注销)$/i,
-  async (e) => {
-    const _config = config()
-    if (_config.banQQ.includes(e.sender.userId)) {
-      e.reply("❌ 你被封禁了", { reply: true })
-    }
-    if (isWriteJSON) {
-      e.reply("❌ 其他命令正在修改文件，请稍后再试", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(/^#(?:unbind|解绑|注销)$/i)
-    if (!regRes) {
-      return
-    } else {
-      const findQQ = _config.QQNoLinkMcNickname.find(
-        (item) => item.qqNo === e.sender.userId
-      )
-      if (!findQQ) {
-        e.reply(`❌ 你没有绑定昵称`, { reply: true })
-        return
-      }
-      _config.QQNoLinkMcNickname = _config.QQNoLinkMcNickname.filter(
-        (item) => item.qqNo !== e.sender.userId
-      )
-      isWriteJSON = true
-      writeJsonSync(`${dirConfig}/config.json`, _config)
-      e.reply(`✅ 解绑成功`, { reply: true })
-      isWriteJSON = false
-    }
-  },
-  {
-    name: "mc-rcon-unbind", // 插件名称
-    log: true,
-  }
-)
-//管理员解绑游戏昵称 #unbind <QQ号>
-export const unbindAdmin = karin.command(
-  /^#(?:unbind|解绑|注销) (\d+)$/i,
-  async (e) => {
-    if (!e.isAdmin && !e.isMaster) {
-      e.reply("❌ 你没有权限使用该命令", { reply: true })
-      return
-    }
-    const _config = config()
-    if (isWriteJSON) {
-      e.reply("❌ 其他命令正在修改文件，请稍后再试", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(/^#(?:unbind|解绑) (\d+)$/i)
-    if (!regRes) {
-      return
-    } else {
-      const [_, qqNo] = regRes
-      const findQQ = _config.QQNoLinkMcNickname.find(
-        (item) => item.qqNo === qqNo
-      )
-      if (!findQQ) {
-        e.reply(`❌ 该QQ号没有绑定昵称`, { reply: true })
-        return
-      }
-      _config.QQNoLinkMcNickname = _config.QQNoLinkMcNickname.filter(
-        (item) => item.qqNo !== qqNo
-      )
-      isWriteJSON = true
-      writeJsonSync(`${dirConfig}/config.json`, _config)
-      e.reply(`✅ 解绑成功`, { reply: true })
-      isWriteJSON = false
-    }
-  },
-  {
-    name: "mc-rcon-unbindAdmin", // 插件名称
-    log: true,
-  }
-)
-//封禁玩家（无法使用机器人功能并且将其绑定昵称在所有服务器中ban了）（管理员专属） #ban <QQ号>
-export const ban = karin.command(
-  /^#(?:ban|封禁) (\d+)$/i,
-  async (e) => {
-    if (!e.isAdmin && !e.isMaster) {
-      e.reply("❌ 你没有权限使用该命令", { reply: true })
-      return
-    }
-    const _config = config()
-    if (isWriteJSON) {
-      e.reply("❌ 其他命令正在修改文件，请稍后再试", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(/^#(?:ban|封禁) (\d+)$/i)
-    if (!regRes) {
-      return
-    }
-    const [_, qqNo] = regRes
-    if (_config.banQQ.includes(qqNo)) {
-      e.reply(`❌ 该QQ号已被封禁`, { reply: true })
-      return
-    }
-    const msgList = []
-    //获取绑定的昵称
-    const findQQ = _config.QQNoLinkMcNickname.find((item) => item.qqNo === qqNo)
-    //将绑定的昵称加入所有服务器黑名单
-    if (findQQ) {
-      for (let index = 0; index < _config.servers.length; index++) {
-        const element = _config.servers[index]
-        const rcon = new rconClient(
-          element.host,
-          element.rconPort,
-          element.password
-        )
-        try {
-          const res = await rcon.send(`ban ${findQQ.mcNickname}`)
-          msgList.push(
-            segment.text(
-              `✅ ${element.alias}服务器已ban${findQQ.mcNickname}\n命令返回：${res}\n`
-            )
-          )
-        } catch (error) {
-          //忽略错误
-          msgList.push(
-            segment.text(`❌ ${element.alias}服务器ban命令执行失败:${error}\n`)
-          )
-        }
-      }
-    } else {
-      msgList.push(segment.text(`❌ 该QQ号未绑定昵称\n`))
-    }
-    //加入封禁列表
-    _config.banQQ.push(qqNo)
-    isWriteJSON = true
-    writeJsonSync(`${dirConfig}/config.json`, _config)
-    msgList.push(segment.text(`✅ 封禁成功\n`))
-    e.reply(msgList, { reply: true })
-    isWriteJSON = false
-  },
-  {
-    name: "mc-rcon-ban", // 插件名称
-    log: true,
-  }
-)
-//解封玩家（解封后可以使用机器人功能）（管理员专属） #unban <QQ号>
-export const unban = karin.command(
-  /^#(?:unban|解封) (\d+)$/i,
-  async (e) => {
-    if (!e.isAdmin && !e.isMaster) {
-      e.reply("❌ 你没有权限使用该命令", { reply: true })
-      return
-    }
-    const _config = config()
-    if (isWriteJSON) {
-      e.reply("❌ 其他命令正在修改文件，请稍后再试", { reply: true })
-    }
-    const regRes = e.msg.match(/^#(?:unban|解禁) (\d+)$/i)
-    if (!regRes) {
-      return
-    }
-    const [_, qqNo] = regRes
-    if (!_config.banQQ.includes(qqNo)) {
-      e.reply(`❌ 该QQ号未被封禁`, { reply: true })
-      return
-    }
-    //解封
-    const msgList = []
-    _config.banQQ = _config.banQQ.filter((item) => item !== qqNo)
-    //在所有服务器中解ban
-    //获取绑定的昵称
-    const findQQ = _config.QQNoLinkMcNickname.find((item) => item.qqNo === qqNo)
-    if (findQQ) {
-      for (let index = 0; index < _config.servers.length; index++) {
-        const element = _config.servers[index]
-        const rcon = new rconClient(
-          element.host,
-          element.rconPort,
-          element.password
-        )
-        try {
-          const res = await rcon.send(`pardon ${findQQ.mcNickname}`)
-          msgList.push(
-            segment.text(
-              `✅ ${element.alias}服务器已解ban${findQQ.mcNickname}\n命令返回：${res}\n`
-            )
-          )
-        } catch (error) {
-          msgList.push(
-            segment.text(
-              `❌ ${element.alias}服务器解ban命令执行失败:${error}\n`
-            )
-          )
-        }
-      }
-    } else {
-      msgList.push(segment.text(`❌ 该QQ号未绑定昵称\n`))
-    }
-    isWriteJSON = true
-    writeJsonSync(`${dirConfig}/config.json`, _config)
-    msgList.push(segment.text(`✅ 解封成功\n`))
-    e.reply(msgList, { reply: true })
-    isWriteJSON = false
-  },
-  {
-    name: "mc-rcon-unban", // 插件名称
-    log: true,
-  }
-)
-//申请白名单 #apply <serverAlias>
-export const apply = karin.command(
-  /^#(?:apply|申请) (\S+)$/i,
-  async (e) => {
-    const _config = config()
-    if (_config.banQQ.includes(e.sender.userId)) {
-      e.reply("❌ 你被封禁了", { reply: true })
-    }
-    //获取服务器信息
-    const regRes = e.msg.match(/^#(?:apply|申请白名单) (\S+)$/i)
-    if (!regRes) {
-      return
-    }
-    const [_, alias] = regRes
-    const findServer = _config.servers.find((item) => item.alias === alias)
-    if (!findServer) {
-      e.reply(
-        "❌ 不存在该服务器，当前存在服务器" +
-          _config.servers.map((item) => item.alias).join(","),
-        { reply: true }
-      )
-      return
-    }
-    //获取绑定的昵称
-    const findQQ = _config.QQNoLinkMcNickname.find(
-      (item) => item.qqNo === e.sender.userId
-    )
-    if (!findQQ) {
-      e.reply("❌ 你未绑定昵称，请使用 #bind|注册|绑定 <nickname> 命令绑定", {
-        reply: true,
-      })
-      return
-    }
-    const rcon = new rconClient(
-      findServer.host,
-      findServer.rconPort,
-      findServer.password
-    )
-    try {
-      const res = await rcon.send(`whitelist add ${findQQ.mcNickname}`)
-      e.reply(`✅ 申请白名单成功,命令返回:${res}`, { reply: true })
-      return
-    } catch (error) {
-      e.reply(`❌ 白名单申请失败,命令返回:${error}`, { reply: true })
-    }
-  },
-  {
-    name: "mc-rcon-apply", // 插件名称
-    log: true,
-  }
-)
-//取消白名单 #revoke <QQNo> <serverAlias>
-export const revoke = karin.command(
-  /^#(?:revoke|取消白名单)\s+(\d+)\s+(\S+)$/,
-  async (e) => {
-    if (!e.isMaster && !e.isAdmin) {
-      e.reply("❌ 你没有权限使用该命令", { reply: true })
-      return
-    }
-    const regRes = e.msg.match(/^#(?:revoke|取消白名单)\s+(\d+)\s+(\S+)$/i)
-    const _config = config()
-    if (!regRes) {
-      return
-    }
-    const [_, qqNo, alias] = regRes
-    const server = _config.servers.find((server) => server.alias === alias)
-    if (!server) {
-      e.reply(
-        "❌ 不存在该服务器,当前存在服务器：" +
-          _config.servers.map((item) => item.alias).join(","),
-        { reply: true }
-      )
-      return
-    }
-    const rcon = new rconClient(server.host, server.rconPort, server.password)
-    try {
-      const res = await rcon.send(`whitelist remove ${qqNo}`)
-      e.reply(`✅ 取消白名单成功,命令返回${res}`, { reply: true })
-    } catch (error) {
-      e.reply(`❌ 取消白名单失败,命令返回${error}`, { reply: true })
-    }
-  },
-  {
-    name: "mc-rcon-revoke", // 插件名称
-    log: true,
-  }
-)
-
-// 群成员退群通知事件
-export const groupMemberBanNotice = karin.accept(
-  "notice.groupMemberBan",
-  async (e) => {
-    //退群
-    const msgList = []
-    msgList.push(segment.text(`QQ号${e.userId}离开了我们\n`))
-    e.bot.sendMsg(e.contact, msgList)
-  },
-  {
-    name: "mc-rcon-groupMemberBanNotice", // 插件名称
-    log: true,
-  }
-)
-//入群欢迎
-export const groupMemberAddNotice = karin.accept(
-  "notice.groupMemberAdd",
-  async (e) => {
-    //加群
-    //查看是否有绑定
-    const _config = config()
-    e.bot.sendMsg(e.contact, [
-      segment.at(e.userId),
-      segment.text(
-        " " + "欢迎加入本群，发言前请先阅读群公告"
-      ),
-    ])
-    const findQQ = _config.QQNoLinkMcNickname.find(
-      (item) => item.qqNo === e.userId
-    )
-    if (findQQ) {
-      e.bot.sendMsg(e.contact, [
-        segment.at(e.userId),
-        segment.text(
-          `你绑定过昵称：${findQQ.mcNickname}，欢迎回家！`
-        ),
-      ])
-    }
-  },
-  {
-    name: "mc-rcon-groupMemberAddNotice", // 插件名称
     log: true,
   }
 )
@@ -680,36 +223,8 @@ export const help = karin.command(
         desc: "列出所有服务器信息（含在线玩家）",
       },
       {
-        cmd: "#(server wllist|白名单列表) <serverAlias>",
-        desc: "查看服务器白名单（管理员专属）",
-      },
-      {
         cmd: "#(rcon|发送命令) <serverAlias|ALL> <command>",
         desc: "发送RCON命令（管理员专属）",
-      },
-      {
-        cmd: "#(bind|绑定|注册) <昵称>",
-        desc: "绑定QQ与游戏昵称",
-      },
-      {
-        cmd: "#(unbind|解绑|注销)",
-        desc: "解绑游戏昵称",
-      },
-      {
-        cmd: "#(ban|封禁) <QQ号>",
-        desc: "封禁玩家（管理员专属）",
-      },
-      {
-        cmd: "#(unban|解禁) <QQ号>",
-        desc: "解封玩家（管理员专属）",
-      },
-      {
-        cmd: "#(apply|申请) <serverAlias>",
-        desc: "申请加入服务器白名单",
-      },
-      {
-        cmd: "#(revoke|取消白名单) <QQ号> <serverAlias>",
-        desc: "撤销白名单权限（管理员专属）",
       },
     ]
 
@@ -725,11 +240,7 @@ export const help = karin.command(
     msg.push("提示：带<>的为须填参数，且无需输入符号<>")
     msg.push("管理命令需要管理员/主人权限")
 
-    e.bot.sendMsg(e.contact, [
-      segment.node(e.bot.account.selfId, e.bot.account.name, [
-        segment.text(msg.join("\n")),
-      ]),
-    ])
+    await sendForward(e, [[segment.text(msg.join("\n"))]])
   },
   {
     name: "mc-rcon-help",

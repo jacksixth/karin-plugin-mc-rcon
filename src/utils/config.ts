@@ -1,4 +1,4 @@
-import { dirPath, basename } from "@/utils"
+import { dirPath, basename } from "./dir"
 import { Config } from "config/config/config"
 import {
   watch,
@@ -7,6 +7,7 @@ import {
   filesByExt,
   copyConfigSync,
   requireFileSync,
+  writeJsonSync,
 } from "node-karin"
 
 const dir = `${karinPathBase}/${basename}`
@@ -30,6 +31,16 @@ export const config = (): Config => {
 }
 
 /**
+ * @description 保存配置并刷新读取缓存（requireFileSync 默认缓存 5 分钟）
+ */
+export const saveConfig = (cfg: Config) => {
+  const file = `${dirConfig}/config.json`
+  if (!writeJsonSync(file, cfg)) return false
+  requireFileSync(file, { force: true })
+  return true
+}
+
+/**
  * @description package.json
  */
 export const pkg = () => requireFileSync(`${dirPath}/package.json`)
@@ -40,9 +51,14 @@ export const pkg = () => requireFileSync(`${dirPath}/package.json`)
 setTimeout(() => {
   const list = filesByExt(dirConfig, ".json", "abs")
   list.forEach((file) =>
-    watch(file, (old, now) => {
-      logger.info("旧数据:", old)
-      logger.info("新数据:", now)
+    watch(file, () => {
+      try {
+        requireFileSync(file, { force: true })
+        logger.info("配置文件已更新")
+      } catch (error) {
+        // 编辑器保存到一半时 JSON 可能不完整，保留旧缓存
+        logger.error("配置文件解析失败，已保留旧配置:", error)
+      }
     })
   )
 }, 2000)

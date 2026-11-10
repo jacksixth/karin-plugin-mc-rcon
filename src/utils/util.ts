@@ -45,6 +45,14 @@ export function isValidHost(host: string): boolean {
   )
 }
 /**
+ * 取冒号（中英文均可）后的内容，用于解析 list/whitelist 等命令返回值
+ */
+export function afterColon(text: string): string {
+  const index = Math.max(text.indexOf(":"), text.indexOf("："))
+  return index === -1 ? "" : text.slice(index + 1).trim()
+}
+
+/**
  * 校验端口号格式
  */
 export function isValidPort(port: string): boolean {

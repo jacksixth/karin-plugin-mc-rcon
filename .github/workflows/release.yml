@@ -29,6 +29,9 @@ jobs:
         run: |
           pnpm install
 
+      - name: 运行测试
+        run: pnpm test
+
       - name: 更新版本号
         uses: google-github-actions/release-please-action@v3
         id: release_please

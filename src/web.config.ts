@@ -1,6 +1,6 @@
 import { Config } from "config/config/config.d"
-import { components, logger, writeJsonSync } from "node-karin"
-import { config, dirConfig } from "./utils"
+import { components, logger } from "node-karin"
+import { config, saveConfig } from "./utils"
 export default {
   info: {
     // 插件信息配置
@@ -66,59 +66,15 @@ export default {
         }),
       }
     ),
-    components.accordionPro.create(
-      "QQNoLinkMcNickname",
-      config().QQNoLinkMcNickname.map((item, index) => {
-        return {
-          ...item,
-          title: item.qqNickname,
-          subtitle: `${item.qqNo}：${item.mcNickname}`,
-        }
-      }),
-      {
-        label: "账号列表",
-        children: components.accordionItem.create("account-item", {
-          title: "账号",
-          subtitle: "配置你的账号",
-          children: [
-            components.input.number("qqNo", {
-              label: "QQ号",
-              rules: [
-                {
-                  regex: /^[1-9][0-9]{4,10}$/,
-                  error: "请输入正确的QQ号",
-                },
-              ],
-            }),
-            components.input.string("qqNickname", {
-              label: "QQ昵称",
-            }),
-            components.input.string("mcNickname", {
-              label: "mc昵称",
-            }),
-          ],
-        }),
-      }
-    ),
-    components.input.group("banQQ", {
-      label: "封禁QQ号组",
-      template: {
-        componentType: "input",
-        key: "banQQ",
-        placeholder: "请输入QQ号",
-        rules: [{ regex: /^[1-9][0-9]{4,10}$/, error: "请输入正确的QQ号" }],
-      },
-      data: [...config().banQQ],
-    })
   ],
 
   /** 前端点击保存之后调用的方法 */
   save: (config: Config) => {
-    logger.info("保存的配置:", config)
-    writeJsonSync(`${dirConfig}/config.json`, config)
+    logger.info("保存配置")
+    const ok = saveConfig(config)
     return {
-      success: true,
-      message: "保存成功, 请刷新页面。",
+      success: ok,
+      message: ok ? "保存成功, 请刷新页面。" : "保存失败, 请检查日志。",
     }
   },
 }

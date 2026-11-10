@@ -91,7 +91,7 @@ const all = () => {
   console.log("所有操作执行完毕")
 }
 
-const cmd = process.argv[2]
+const cmd = process.argv[2] ?? ""
 console.log(`执行命令: ${cmd}`)
 if (cmd.includes("version")) {
   version()
