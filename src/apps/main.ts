@@ -142,8 +142,13 @@ let isSending = false
 export const rcon = karin.command(
   rconReg,
   async (e) => {
-    if (!e.isAdmin && !e.isMaster) {
-      return e.reply("❌ 你没有权限使用该命令", { reply: true })
+    // qqbot 拿不到 QQ 号的 admin 列表，改用群身份判断
+    const role = "role" in e.sender ? e.sender.role : undefined
+    const isGroupAdmin = role === "owner" || role === "admin"
+    if (!isGroupAdmin && !e.isMaster) {
+      return e.reply("❌ 你没有权限使用该命令（需要群主/管理员或机器人主人）", {
+        reply: true,
+      })
     }
     if (isSending) {
       return e.reply("❌ 已有命令正在执行，请等待当前命令完成", { reply: true })
@@ -239,7 +244,7 @@ export const help = karin.command(
 
     msg.push("================================")
     msg.push("提示：<> 为必填参数（不用输入尖括号），# 和 / 均可作前缀")
-    msg.push("管理命令需要管理员/主人权限")
+    msg.push("#rcon 需要群主/群管理员或机器人主人权限")
 
     await sendForward(e, [[segment.text(msg.join("\n"))]])
   },
