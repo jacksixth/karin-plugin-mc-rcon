@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v2.1.0...v2.2.0) (2026-11-10)
+
+
+### Features
+
+* #rcon 权限改为群主/群管理员或机器人主人 ([5e7049c](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/5e7049cf23e549c935bcf385cb353b15f89fc86c))
+
 ## [2.1.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v2.0.0...v2.1.0) (2026-11-10)
 
 
