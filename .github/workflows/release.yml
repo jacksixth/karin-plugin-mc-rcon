@@ -95,8 +95,8 @@ jobs:
         run: npm install -g npm@latest
 
       # 用 OIDC 发布，不要设置 NODE_AUTH_TOKEN，否则会覆盖 trusted publishing
+      # 不判断 release_created，重跑也能补发；靠版本判重避免重复发布
       - name: 发布到 npm
-        if: ${{ steps.release_please.outputs.release_created || github.event_name == 'workflow_dispatch' }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if npm view "karin-plugin-mc-rcon@$VERSION" version >/dev/null 2>&1; then
