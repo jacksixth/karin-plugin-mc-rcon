@@ -90,7 +90,8 @@ export const listServer = karin.command(
           const motd = await mcMotd(element.host, parseInt(element.port))
           if (motd) {
             if (motd.favicon) {
-              msgList.push(segment.image(motd.favicon))
+              // 图标放最前面
+              msgList.unshift(segment.image(motd.favicon))
             }
             if (motd.description) {
               msgList.push(segment.text(motd.description + "\n"))
