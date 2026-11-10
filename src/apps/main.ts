@@ -28,7 +28,7 @@ const sendForward = async (e: Message, msgs: Elements[][]) => {
   )
 }
 //motd查询 #motd <host>:<port> | #motd <host> <port>
-const motdReg = /^#?motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i
+const motdReg = /^[#/]?motd\s+([a-z0-9.-]+)(?::(\d+)|\s+(\d+))$/i
 export const motd = karin.command(
   motdReg,
   async (e) => {
@@ -68,7 +68,7 @@ export const motd = karin.command(
 //列出所有服务器信息（伪造转发消息防刷屏） #server list
 let isListing = false
 export const listServer = karin.command(
-  /^#?(?:server list|服务器状态)$/i,
+  /^[#/]?(?:server list|服务器状态)$/i,
   async (e) => {
     const _config = config()
     if (isListing) {
@@ -136,7 +136,7 @@ export const listServer = karin.command(
   }
 )
 // 向单个/所有服务器发送 RCON 命令（管理员专属） #rcon <serverAlias|ALL> <commend>
-const rconReg = /^#(?:rcon|发送命令) (\S+) (.+)$/i
+const rconReg = /^[#/](?:rcon|发送命令) (\S+) (.+)$/i
 let isSending = false
 export const rcon = karin.command(
   rconReg,
@@ -211,7 +211,7 @@ export const rcon = karin.command(
 //命令列表
 // 查看命令帮助 #help
 export const help = karin.command(
-  /^#(?:help|帮助)$/i,
+  /^[#/](?:help|帮助)$/i,
   async (e) => {
     const helpList = [
       {
@@ -237,7 +237,7 @@ export const help = karin.command(
     })
 
     msg.push("================================")
-    msg.push("提示：带<>的为须填参数，且无需输入符号<>")
+    msg.push("提示：<> 为必填参数（不用输入尖括号），# 和 / 均可作前缀")
     msg.push("管理命令需要管理员/主人权限")
 
     await sendForward(e, [[segment.text(msg.join("\n"))]])
