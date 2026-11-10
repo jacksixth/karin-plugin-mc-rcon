@@ -6,6 +6,11 @@ on:
       - main
   workflow_dispatch: # 允许手动触发
 
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write # npm trusted publishing (OIDC)
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -86,11 +91,19 @@ jobs:
           name: build-zip
           path: build.zip
 
+      - name: 升级 npm（trusted publishing 需要 >= 11.5.1）
+        run: npm install -g npm@latest
+
+      # 用 OIDC 发布，不要设置 NODE_AUTH_TOKEN，否则会覆盖 trusted publishing
       - name: 发布到 npm
-        run: npm run pub
-        if: ${{ steps.release_please.outputs.release_created }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        if: ${{ steps.release_please.outputs.release_created || github.event_name == 'workflow_dispatch' }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "karin-plugin-mc-rcon@$VERSION" version >/dev/null 2>&1; then
+            echo "karin-plugin-mc-rcon@$VERSION 已发布，跳过"
+          else
+            npm run pub
+          fi
 
       - name: 上传 release
         if: ${{ steps.release_please.outputs.release_created }}
