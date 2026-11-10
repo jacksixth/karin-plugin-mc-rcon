@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v2.0.0...v2.1.0) (2026-11-10)
+
+
+### Features
+
+* #server list 的服务器图标改为显示在文字前 ([8f987a1](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/8f987a102cce2a3db4ec7ea515591e2a18931587))
+* 命令前缀同时支持 # 和 / ([f05b102](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/f05b10236da9284949ee0081b40e99986ab95d2c))
+
+
+### Bug Fixes
+
+* 服务器图标改为显示在别名/地址行的下一行 ([224a12a](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/224a12ac491235f31b29983891d4dacbefb04d4a))
+
 ## [2.0.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.14.0...v2.0.0) (2026-11-10)
 
 
