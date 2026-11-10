@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.14.0...v2.0.0) (2026-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* 白名单、封禁、QQ 绑定相关命令与配置字段已移除
+
+### Features
+
+* 移除黑白名单与绑定功能，qqbot 改为普通消息发送 ([709605e](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/709605efbc2f0213ba27e06466f8f520bc3b707e))
+
 ## [1.14.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v1.13.0...v1.14.0) (2026-01-05)
 
 
