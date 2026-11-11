@@ -66,6 +66,37 @@ export default {
         }),
       }
     ),
+    components.accordionPro.create(
+      "requests",
+      config().requests.map((item) => {
+        return {
+          ...item,
+          title: item.nick,
+          subtitle: `${item.alias} · ${item.time}`,
+        }
+      }),
+      {
+        label: "白名单申请",
+        children: components.accordionItem.create("requests-item", {
+          title: "申请",
+          subtitle: "待审批的白名单申请",
+          children: [
+            components.input.string("id", {
+              label: "申请人标识",
+            }),
+            components.input.string("nick", {
+              label: "MC昵称",
+            }),
+            components.input.string("alias", {
+              label: "服务器别名",
+            }),
+            components.input.string("time", {
+              label: "申请时间",
+            }),
+          ],
+        }),
+      }
+    ),
   ],
 
   /** 前端点击保存之后调用的方法 */

@@ -45,6 +45,19 @@ export function isValidHost(host: string): boolean {
   )
 }
 /**
+ * 取出首个参数，支持 <带空格的内容> 写法
+ * @param str 命令参数部分
+ * @returns [参数, 剩余内容]
+ */
+export function takeArg(str: string): [string, string] {
+  const angle = str.match(/^<([^>]*)>\s*([\s\S]*)$/)
+  if (angle) return [angle[1].trim(), angle[2]]
+  const plain = str.match(/^(\S+)\s*([\s\S]*)$/)
+  if (plain) return [plain[1], plain[2]]
+  return ["", ""]
+}
+
+/**
  * 取冒号（中英文均可）后的内容，用于解析 list/whitelist 等命令返回值
  */
 export function afterColon(text: string): string {
