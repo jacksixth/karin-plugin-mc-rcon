@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v2.2.0...v2.3.0) (2026-11-11)
+
+
+### Features
+
+* 新增白名单申请审批流程 ([cd08c01](https://github.com/jacksixth/karin-plugin-mc-rcon/commit/cd08c012c87c8900dc202896253dcefd1683f5d9))
+
 ## [2.2.0](https://github.com/jacksixth/karin-plugin-mc-rcon/compare/v2.1.0...v2.2.0) (2026-11-10)
 
 
